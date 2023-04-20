@@ -1,84 +1,79 @@
-public class Clients extends Thread {
-    public static final int STANDING_UP = 1;
-    public static final int SEATED_IN_SOFA = 2;
-    public static final int CUTTING_HAIR = 3;
-    public static final int PAYNG = 4;
-    public static final int LEAVING = 5;
+package br.com.feevale.classes;
 
-    public int id;
-    public int actionType;
+import br.com.feevale.domain.ClientStatus;
 
-    public BarberShop barberShop;
+public class Client extends Thread {
+    private int id;
+    private ClientStatus stauts;
+    private BarberShop barberShop;
+    private int sleepTime = 1000;
 
     public Client(int id, BarberShop barberShop) {
         this.id = id;
         this.barberShop = barberShop;
-        this.actionType = STANDING_UP;
-        start();
+        locateClientInBarberShop();
     }
-
-    @Override
-    public void start() {
-        if(barberShop.isBarberShopFull()) return;
-        super.start();
-        setPriority(1);
-        run();
-    }
-
     @Override
     public void run() {
         super.run();
-        while(actionType != LEAVING) {
-            try {
-                locateClientInBarberShop();
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        while(stauts != ClientStatus.LEAVING) {
+            locateClientInBarberShop();
+            waitToRelocate();
         }
     }
 
-    private void locateClientInBarberShop() throws InterruptedException {
-        if(actionType == STANDING_UP && !barberShop.isSofaFull()) goToSofa();
-        else if(actionType == SEATED_IN_SOFA && !barberShop.isChairsFull()) goToChair();
-        else if(actionType == CUTTING_HAIR) goPay();
-        else if(actionType == PAYNG) leave();
-
-        performAction();
+    private void locateClientInBarberShop() {
+        if(!barberShop.isBarberShopFull()) {
+            if(stauts == null) {
+                if (!barberShop.isAnyoneWaitingInSofa() && !barberShop.isChairsFull()) goToChair();
+                else if (!barberShop.isSofaFull()) goToSofa();
+                else standingUp();
+            }
+            else if (stauts == ClientStatus.STANDING && !barberShop.isSofaFull() && barberShop.standing.peek().id == id) goToSofa();
+            else if (stauts == ClientStatus.SEATED_IN_SOFA && !barberShop.isChairsFull() && barberShop.sofa.peek().id == id) goToChair();
+            else if (stauts == ClientStatus.WAITING_BARBER && barberShop.isBarberAvailable()) cuttingHair();
+            else if (stauts == ClientStatus.CUTTING_HAIR) goPay();
+            else if (stauts == ClientStatus.PAYNG && barberShop.paing.peek().id == id) leave();
+        };
     }
 
     private void goToChair() {
-        actionType = CUTTING_HAIR;
-        barberShop.chairs++;
-        setPriority(1);
-        System.out.println("Cliente " + id + " Sentou na cadeira para corte");
+        if((stauts != null && stauts == ClientStatus.SEATED_IN_SOFA)) barberShop.sofa.poll();
+        stauts = ClientStatus.WAITING_BARBER;
+        barberShop.chairs.add(this);
+        System.out.println("Client: " + id + " is waiting to cut hair");
+    }
+    private void cuttingHair() {
+        stauts = ClientStatus.CUTTING_HAIR;
+        System.out.println("Client: " + id + " getting a hair cut");
+        sleepTime = 2000;
     }
     private void goToSofa() {
-        barberShop.standingUp--;
-        actionType = SEATED_IN_SOFA;
-        barberShop.sofa++;
-        setPriority(5);
-        System.out.println("Cliente " + id + " Sentou no Sofa");
+        if((stauts != null && stauts == ClientStatus.STANDING)) barberShop.standing.poll();
+        stauts = ClientStatus.SEATED_IN_SOFA;
+        System.out.println("Client " + id + " sat on the sofa");
+        barberShop.sofa.add(this);
     }
-    private void standUp() {
-        actionType = STANDING_UP;
-        barberShop.standingUp++;
-        setPriority(1);
+    private void standingUp() {
+        stauts = ClientStatus.STANDING;
+        barberShop.standing.add(this);
+        System.out.println("Client " + id + " is standing");
     }
     private void goPay() {
-        actionType = PAYNG;
-        barberShop.standingUp++;
-        setPriority(1);
-        System.out.println("Cliente " + id + " Foi Pagar");
+        sleepTime = 1000;
+        stauts = ClientStatus.PAYNG;
+        barberShop.chairs.remove(this);
+        barberShop.paing.add(this);
+        System.out.println("Client " + id + " waitting to pay");
     }
     private void leave() {
-        actionType = LEAVING;
-        barberShop.standingUp--;
-        System.out.println("Cliente " + id + " Foi embora");
+        stauts = ClientStatus.LEAVING;
+        System.out.println("Client " + id + " leaved happy with the new cut");
+        barberShop.paing.poll();
     }
-    private void performAction() {
+    private void waitToRelocate() {
         try {
-            Thread.sleep(1000);
-            setPriority(getPriority()+1);
+            Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
