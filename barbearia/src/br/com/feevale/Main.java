@@ -17,7 +17,6 @@ public class Main {
 
         System.out.println("Start");
 
-
         final BarberShop barber = new BarberShop();
 
         barber.openBarberShop();

@@ -1,70 +1,106 @@
-//package br.com.feevale.classes;
-//
-//import static br.com.feevale.domain.ClientStatus.CORTANDO;
-//import static br.com.feevale.domain.ClientStatus.ESPERANDO_CORTE;
-//import static br.com.feevale.domain.ClientStatus.ESPERANDO_PAGAMENTO;
-//import static br.com.feevale.domain.ClientStatus.PAGANDO;
-//import static java.util.Objects.isNull;
-//
-//public class Barbeiro extends Thread {
-//
-//    private final String nome;
-//    private final Barbearia barbearia;
-//
-//    public Barbeiro(final Barbearia barbearia, final String nome) {
-//        super(nome);
-//        this.nome = nome;
-//        this.barbearia = barbearia;
-//    }
-//
-//    @Override
-//    public void run() {
-//        while (true) {
-//            atender();
-//        }
-//    }
-//
-//    public String getNome() {
-//        return nome;
-//    }
-//
-//    private void atender() {
-//        final Cliente cliente = barbearia.atender();
-//
-//        if (isNull(cliente)) {
-//            dormir();
-//        } else if (cliente.getStatus() == ESPERANDO_CORTE) {
-//            cliente.setStatus(CORTANDO);
-//            System.out.printf("%s está cortando com %s.\n", cliente.getNome(), this.getNome());
-//
-//            trabalhar();
-//            cliente.setStatus(ESPERANDO_PAGAMENTO);
-//        } else {
-//            cliente.setStatus(PAGANDO);
-//            System.out.printf("%s está pagando com %s.\n", cliente.getNome(), this.getNome());
-//
-//            trabalhar();
-//            barbearia.liberar(cliente);
-//        }
-//    }
-//
-//    private void trabalhar() {
-//        try {
-//            sleep((int) (Math.random() * 5000));
-//        } catch (final InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void dormir() {
-//        try {
-//            System.out.printf("%s está dormindo.\n", this.getNome());
-//            synchronized (barbearia) {
-//                barbearia.wait();
-//            }
-//        } catch (final InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//}
+package br.com.feevale.classes;
+
+import br.com.feevale.domain.ClientStatus;
+
+public class Barbeiro extends Thread {
+
+    private final String nome;
+    private final BarberShop barberShop;
+
+    public Barbeiro(final BarberShop BarberShop, final String nome) {
+        super(nome);
+        this.nome = nome;
+        this.barberShop = BarberShop;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            atender();
+        }
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    private void atender() {
+        barberShop.setBarberAvailable(true);
+
+        Client client = null;
+        synchronized (barberShop.getChairs()) {
+            if (!barberShop.getChairs().isEmpty()) {
+                client = barberShop.getChairs().stream()
+                        .filter(c -> c.getStatus().equals(ClientStatus.WAITING_BARBER))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }
+
+        if (client != null) {
+            cut(client);
+        } else {
+            synchronized (barberShop.getPaying()) {
+                if (!barberShop.getPaying().isEmpty()) {
+                    client = barberShop.getPaying().peek();
+                }
+            }
+        }
+
+        if (client != null) {
+            pay(client);
+        }
+
+        // final Client Client = barberShop.atender();
+
+        // if (isNull(Client)) {
+        // dormir();
+        // } else if (Client.getStatus() == WAITING_BARBER) {
+        // Client.setStatus(CUTTING_HAIR);
+        // System.out.printf("%s está CUTTING_HAIR com %s.\n", Client.getNome(),
+        // this.getNome());
+
+        // trabalhar();
+        // Client.setStatus(WAITING_BARBER);
+        // } else {
+        // Client.setStatus(PAYNG);
+        // System.out.printf("%s está PAYNG com %s.\n", Client.getNome(),
+        // this.getNome());
+
+        // trabalhar();
+        // barberShop.liberar(Client);
+        // }
+    }
+
+    private void trabalhar() {
+        try {
+            sleep((int) (Math.random() * 1000));
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized void cut(Client client) {
+        System.out.println(this.nome + " is cutting client " + client.id);
+        trabalhar();
+        client.goPay();
+    }
+
+    private synchronized void pay(Client client) {
+        System.out.println(this.nome + " is recwiving payment client " + client.id);
+        trabalhar();
+        client.leave();
+    }
+
+    private void dormir() {
+        try {
+            System.out.printf("%s está dormindo.\n", this.getNome());
+            synchronized (barberShop) {
+                barberShop.wait();
+            }
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
