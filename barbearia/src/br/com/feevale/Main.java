@@ -2,7 +2,7 @@ package br.com.feevale;
 
 //import br.com.feevale.classes.Barbearia;
 //import br.com.feevale.classes.Barbeiro;
-import br.com.feevale.classes.BarberShop;
+import br.com.feevale.classes.BarberShop.BarberShop;
 //import br.com.feevale.classes.GeradorCliente;
 
 public class Main {

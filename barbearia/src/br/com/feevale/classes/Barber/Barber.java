@@ -1,13 +1,15 @@
-package br.com.feevale.classes;
+package br.com.feevale.classes.Barber;
 
+import br.com.feevale.classes.BarberShop.BarberShop;
+import br.com.feevale.classes.Client.Client;
 import br.com.feevale.domain.ClientStatus;
 
-public class Barbeiro extends Thread {
+public class Barber extends Thread {
 
     private final String nome;
     private final BarberShop barberShop;
 
-    public Barbeiro(final BarberShop BarberShop, final String nome) {
+    public Barber(final BarberShop BarberShop, final String nome) {
         super(nome);
         this.nome = nome;
         this.barberShop = BarberShop;
@@ -50,26 +52,6 @@ public class Barbeiro extends Thread {
         if (client != null) {
             pay(client);
         }
-
-        // final Client Client = barberShop.atender();
-
-        // if (isNull(Client)) {
-        // dormir();
-        // } else if (Client.getStatus() == WAITING_BARBER) {
-        // Client.setStatus(CUTTING_HAIR);
-        // System.out.printf("%s está CUTTING_HAIR com %s.\n", Client.getNome(),
-        // this.getNome());
-
-        // trabalhar();
-        // Client.setStatus(WAITING_BARBER);
-        // } else {
-        // Client.setStatus(PAYNG);
-        // System.out.printf("%s está PAYNG com %s.\n", Client.getNome(),
-        // this.getNome());
-
-        // trabalhar();
-        // barberShop.liberar(Client);
-        // }
     }
 
     private void trabalhar() {
