@@ -1,4 +1,4 @@
-package br.com.feevale.domain;
+package br.com.feevale.antigo.domain;
 
 public enum ClientStatus {
     STANDING,

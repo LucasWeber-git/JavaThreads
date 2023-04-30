@@ -1,7 +1,7 @@
-package br.com.feevale.classes.Client;
+package br.com.feevale.antigo.classes.Client;
 
-import br.com.feevale.classes.BarberShop.BarberShop;
-import br.com.feevale.domain.ClientStatus;
+import br.com.feevale.antigo.classes.BarberShop.BarberShop;
+import br.com.feevale.antigo.domain.ClientStatus;
 
 public class Client extends Thread {
     public int id;

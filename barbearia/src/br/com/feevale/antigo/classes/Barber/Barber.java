@@ -1,8 +1,8 @@
-package br.com.feevale.classes.Barber;
+package br.com.feevale.antigo.classes.Barber;
 
-import br.com.feevale.classes.BarberShop.BarberShop;
-import br.com.feevale.classes.Client.Client;
-import br.com.feevale.domain.ClientStatus;
+import br.com.feevale.antigo.classes.BarberShop.BarberShop;
+import br.com.feevale.antigo.classes.Client.Client;
+import br.com.feevale.antigo.domain.ClientStatus;
 
 public class Barber extends Thread {
 

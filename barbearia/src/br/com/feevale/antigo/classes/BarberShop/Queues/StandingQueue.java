@@ -1,7 +1,7 @@
-package br.com.feevale.classes.BarberShop.Queues;
+package br.com.feevale.antigo.classes.BarberShop.Queues;
 
-import br.com.feevale.classes.BarberShop.BarberShop;
-import br.com.feevale.classes.Client.Client;
+import br.com.feevale.antigo.classes.BarberShop.BarberShop;
+import br.com.feevale.antigo.classes.Client.Client;
 
 public class StandingQueue extends ClientQueue {
     public StandingQueue(int maxLength, String name, BarberShop barberShop) {

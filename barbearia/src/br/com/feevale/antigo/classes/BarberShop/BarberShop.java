@@ -1,9 +1,9 @@
-package br.com.feevale.classes.BarberShop;
+package br.com.feevale.antigo.classes.BarberShop;
 
-import br.com.feevale.classes.Barber.Barber;
-import br.com.feevale.classes.BarberShop.Queues.ClientQueue;
-import br.com.feevale.classes.BarberShop.Queues.StandingQueue;
-import br.com.feevale.classes.Client.Client;
+import br.com.feevale.antigo.classes.Barber.Barber;
+import br.com.feevale.antigo.classes.BarberShop.Queues.ClientQueue;
+import br.com.feevale.antigo.classes.BarberShop.Queues.StandingQueue;
+import br.com.feevale.antigo.classes.Client.Client;
 
 import java.util.*;
 

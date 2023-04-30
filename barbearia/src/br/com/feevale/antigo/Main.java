@@ -1,8 +1,9 @@
-package br.com.feevale;
+package br.com.feevale.antigo;
 
 //import br.com.feevale.classes.Barbearia;
 //import br.com.feevale.classes.Barbeiro;
-import br.com.feevale.classes.BarberShop.BarberShop;
+
+import br.com.feevale.antigo.classes.BarberShop.BarberShop;
 //import br.com.feevale.classes.GeradorCliente;
 
 public class Main {
